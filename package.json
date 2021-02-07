@@ -1,0 +1,13 @@
+{
+    "name": "com.rojo.usunposition",
+    "version":"0.1.0",
+    "displayName":"USunPosition",
+    "description":"This is an astronomically accurate Sun positioning system for Unity",
+    "unity":"2020.2",
+    "unityRelease":"2f1",
+    "dependencies":{},
+    "keywords": ["Skybox","Sun"],
+    "author":{
+        "name": "Hojaverde"
+    }
+}
