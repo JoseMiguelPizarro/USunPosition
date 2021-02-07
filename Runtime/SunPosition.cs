@@ -9,15 +9,11 @@ public static class SunPosition
 	{
 		var coordinates = GetSunCoordinates(year, month, day, hour, longitude, latitude);
 
-		var direction = -coordinates.ToCartesianCoordinates();
-
-		var left = Vector3.Cross(direction, Vector3.up);
-		var up = Vector3.Cross(direction, left);
-
-		transform.rotation = Quaternion.LookRotation(direction, up);
+		transform.rotation = coordinates.GetFlippedRotation();
 
 		return coordinates;
 	}
+	
 
 	/// <summary>
 	/// Computes the sun position using the PSA algorithm
@@ -27,9 +23,9 @@ public static class SunPosition
 	/// <param name="longitude">Longitude in degrees</param>
 	/// <param name="latitude">Latitude in degrees</param>
 	/// <returns>Sun position in spherical coordinates</returns>
-	public static SphericalCoordinates GetSunCoordinates(int year, int mont, int day, float hour, float longitude, float latitude)
+	public static SphericalCoordinates GetSunCoordinates(int year, int month, int day, float hour, float longitude, float latitude)
 	{
-		var julianDate = GetJulianDate(year, mont, day) + hour / 24.0f;
+		var julianDate = GetJulianDate(year, month, day) + hour / 24.0f;
 
 		var n = julianDate - 2451545.0f;
 		var omega = 2.1429f - 0.0010394594f * n;

@@ -22,4 +22,25 @@ public struct SphericalCoordinates
 	{
 		return new Vector3(Sin(zenith) * Sin(azimuth), Sin(zenith) * Cos(azimuth), Cos(zenith)) * radius;
 	}
+
+	public Quaternion GetRotation()
+	{
+		var direction = ToCartesianCoordinates();
+
+		var left = Vector3.Cross(direction, Vector3.up);
+		var up = Vector3.Cross(direction, left);
+
+		return Quaternion.LookRotation(direction, up);
+	}
+
+	public Quaternion GetFlippedRotation()
+	{
+		var direction = -ToCartesianCoordinates();
+
+		var left = Vector3.Cross(direction, Vector3.up);
+		var up = Vector3.Cross(direction, left);
+
+		return Quaternion.LookRotation(direction, up);
+	}
+
 }
