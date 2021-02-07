@@ -36,7 +36,7 @@ Additionally you can alignt to the Sun's light direction directly by using <b>Al
 SunPosition.AlignToLightDirection(directionalLight, year, month, day, hour, latitude, longitude);
 ```
 
-[![sunposition.gif](https://s2.gifyu.com/images/sunposition.gif)]
+![sunposition.gif](https://s2.gifyu.com/images/sunposition.gif)
 
 ## Licence
 
