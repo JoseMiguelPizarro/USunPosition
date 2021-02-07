@@ -3,15 +3,15 @@ using UnityEngine;
 using static UnityEngine.Mathf;
 
 [Serializable]
-public struct SphereCoordinates
+public struct SphericalCoordinates
 {
 	public float azimuth;
 	public float zenith;
 	public float radius;
 
-	public SphereCoordinates(float azimuth, float zenith) : this(azimuth, zenith, 1.0f) { }
+	public SphericalCoordinates(float azimuth, float zenith) : this(azimuth, zenith, 1.0f) { }
 
-	public SphereCoordinates(float azimuth, float zenith, float radius)
+	public SphericalCoordinates(float azimuth, float zenith, float radius)
 	{
 		this.azimuth = azimuth;
 		this.zenith = zenith;
