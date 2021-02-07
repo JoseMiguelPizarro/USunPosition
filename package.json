@@ -1,6 +1,6 @@
 {
     "name": "com.rojo.usunposition",
-    "version":"0.1.0",
+    "version":"0.2.0",
     "displayName":"USunPosition",
     "description":"This is an astronomically accurate Sun positioning system for Unity",
     "unity":"2020.2",
