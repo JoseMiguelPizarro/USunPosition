@@ -1,70 +1,79 @@
 ﻿using UnityEngine;
 using static UnityEngine.Mathf;
 
-public static class SunPosition
+namespace USunPosition
 {
-	private const float PARALLAX_FACTOR = 4.258756e-5f;
-
-	public static SphericalCoordinates AlignToLightDirection(Transform transform, int year, int month, int day, float hour, float longitude, float latitude)
+	public static class SunPosition
 	{
-		var coordinates = GetSunCoordinates(year, month, day, hour, longitude, latitude);
+		private const float PARALLAX_FACTOR = 4.258756e-5f;
 
-		transform.rotation = coordinates.GetFlippedRotation();
+		/// <summary>
+		/// Alignt the transform to the light direction proyected from the sun
+		/// </summary>
+		/// <returns>Sun spherical coordinates</returns>
+		public static SphericalCoordinates AlignToLightDirection(Transform transform, int year, int month, int day, float hour, float longitude, float latitude)
+		{
+			var coordinates = GetSunCoordinates(year, month, day, hour, longitude, latitude);
 
-		return coordinates;
-	}
-	
+			transform.rotation = coordinates.GetFlippedRotation();
 
-	/// <summary>
-	/// Computes the sun position using the PSA algorithm
-	/// </summary>
-	/// <see cref="https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560"/>
-	/// <param name="hour">Time in hours</param>
-	/// <param name="longitude">Longitude in degrees</param>
-	/// <param name="latitude">Latitude in degrees</param>
-	/// <returns>Sun position in spherical coordinates</returns>
-	public static SphericalCoordinates GetSunCoordinates(int year, int month, int day, float hour, float longitude, float latitude)
-	{
-		var julianDate = GetJulianDate(year, month, day) + hour / 24.0f;
+			return coordinates;
+		}
 
-		var n = julianDate - 2451545.0f;
-		var omega = 2.1429f - 0.0010394594f * n;
-		var meanLongitude = 4.8950630f + 0.017202791698f * n;
-		var meanAnomaly = 6.2400600f + 0.0172019699f * n;
+		/// <summary>
+		/// Computes the sun position using the PSA algorithm
+		/// </summary>
+		/// <see cref="https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560"/>
+		/// <param name="hour">Time in hours</param>
+		/// <param name="longitude">Longitude in degrees</param>
+		/// <param name="latitude">Latitude in degrees</param>
+		/// <returns>Sun position in spherical coordinates</returns>
+		public static SphericalCoordinates GetSunCoordinates(int year, int month, int day, float hour, float longitude, float latitude)
+		{
+			var julianDate = GetJulianDate(year, month, day) + hour / 24.0f;
 
-		var eclipticLongitude = meanLongitude + 0.03341607f * Sin(meanAnomaly) + 0.00034894f * Sin(2 * meanAnomaly) - 0.0001134f - 0.0000203f * Sin(omega);
-		var eclipticObliquity = 0.4090928f - 6.2140e-9f * n + 0.0000396f * Cos(omega);
+			var n = julianDate - 2451545.0f;
+			var omega = 2.1429f - 0.0010394594f * n;
+			var meanLongitude = 4.8950630f + 0.017202791698f * n;
+			var meanAnomaly = 6.2400600f + 0.0172019699f * n;
 
-		var sinEclipticLongitude = Sin(eclipticLongitude);
+			var eclipticLongitude = meanLongitude + 0.03341607f * Sin(meanAnomaly) + 0.00034894f * Sin(2 * meanAnomaly) - 0.0001134f - 0.0000203f * Sin(omega);
+			var eclipticObliquity = 0.4090928f - 6.2140e-9f * n + 0.0000396f * Cos(omega);
 
-		var rightAscention = Atan2(Cos(eclipticObliquity) * sinEclipticLongitude, Cos(eclipticLongitude));
+			var sinEclipticLongitude = Sin(eclipticLongitude);
 
-		var declination = Asin(Sin(eclipticObliquity) * sinEclipticLongitude);
+			var rightAscention = Atan2(Cos(eclipticObliquity) * sinEclipticLongitude, Cos(eclipticLongitude));
 
-		if (rightAscention < 0.0f)
-			rightAscention += 2 * PI;
+			var declination = Asin(Sin(eclipticObliquity) * sinEclipticLongitude);
 
-		var gmst = 6.6974243242f + 0.0657098283f * n + hour;
+			if (rightAscention < 0.0f)
+				rightAscention += 2 * PI;
 
-		var lmst = (gmst * 15 + longitude) * (PI / 180);
-		var hourAngle = lmst - rightAscention;
-		var cosLatitude = Cos(latitude);
-		var sinLatitude = Sin(latitude);
-		var cosHourAngle = Cos(hourAngle);
-		
+			var gmst = 6.6974243242f + 0.0657098283f * n + hour;
 
-		var zenit = Acos(cosLatitude * cosHourAngle * Cos(declination) + Sin(declination) * sinLatitude);
-		var azimut = Atan2(-Sin(hourAngle), (Tan(declination) * cosLatitude - sinLatitude * cosHourAngle));
+			var lmst = (gmst * 15 + longitude) * (PI / 180);
+			var hourAngle = lmst - rightAscention;
+			var cosLatitude = Cos(latitude);
+			var sinLatitude = Sin(latitude);
+			var cosHourAngle = Cos(hourAngle);
 
-		var parallax = PARALLAX_FACTOR * Sin(zenit);
 
-		zenit = zenit + parallax;
+			var zenit = Acos(cosLatitude * cosHourAngle * Cos(declination) + Sin(declination) * sinLatitude);
+			var azimut = Atan2(-Sin(hourAngle), (Tan(declination) * cosLatitude - sinLatitude * cosHourAngle));
 
-		return new SphericalCoordinates(azimut, zenit, 1.0f);
-	}
+			var parallax = PARALLAX_FACTOR * Sin(zenit);
 
-	public static float GetJulianDate(int year, int month, int day)
-	{
-		return (1461 * (year + 4800 + (month - 14) / 12)) / 4 + (367 * (month - 2 - 12 * ((month - 14) / 12))) / 12 - (3 * ((year + 4900 + (month - 14) / 12) / 100)) / 4 + day - 32075;
+			zenit = zenit + parallax;
+
+			return new SphericalCoordinates(azimut, zenit, 1.0f);
+		}
+
+		/// <summary>
+		/// Converts from gregorian date to julian date
+		/// </summary>
+		public static float GetJulianDate(int year, int month, int day)
+		{
+			return (1461 * (year + 4800 + (month - 14) / 12)) / 4 + (367 * (month - 2 - 12 * ((month - 14) / 12))) / 12 - (3 * ((year + 4900 + (month - 14) / 12) / 100)) / 4 + day - 32075;
+		}
 	}
 }
