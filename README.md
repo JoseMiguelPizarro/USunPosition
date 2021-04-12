@@ -3,7 +3,7 @@
 
 # USunPosition
 
-This is an astronomically accurate Sun positioning system for Unity. It implements de PSA algorithm: https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560
+This is an astronomically accurate Sun positioning system for Unity. It implements the PSA algorithm: https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560
 
 
 ## How To Install
